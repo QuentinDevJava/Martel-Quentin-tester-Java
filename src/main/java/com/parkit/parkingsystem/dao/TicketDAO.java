@@ -104,10 +104,9 @@ public class TicketDAO {
 			dataBaseConfig.closePreparedStatement(ps);
 
 		} catch (Exception ex) {
-			logger.error("Error fetching next available slot", ex);
+			logger.error("Errors when counting the number of times the car has already passed by", ex);
 		} finally {
 			dataBaseConfig.closeConnection(con);
-			System.out.println(nbTicket);
 			return nbTicket;
 		}
 	}
