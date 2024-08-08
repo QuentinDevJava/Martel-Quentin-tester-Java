@@ -32,13 +32,15 @@ public class TicketDAO {
 			ps.setDouble(3, ticket.getPrice());
 			ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
 			ps.setTimestamp(5, (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
-			return ps.execute();
+			ps.setString(6, ticket.getVehicleRegNumber());
+			int updateRowCount = ps.executeUpdate();
+			return (updateRowCount == 1);
 		} catch (Exception ex) {
 			logger.error("Error fetching next available slot", ex);
 		} finally {
 			dataBaseConfig.closeConnection(con);
-			return false;
 		}
+		return false;
 	}
 
 	public Ticket getTicket(String vehicleRegNumber) {
@@ -66,8 +68,8 @@ public class TicketDAO {
 			logger.error("Error fetching next available slot", ex);
 		} finally {
 			dataBaseConfig.closeConnection(con);
-			return ticket;
 		}
+		return ticket;
 	}
 
 	public boolean updateTicket(Ticket ticket) {
@@ -90,7 +92,7 @@ public class TicketDAO {
 
 	public int getNbTicket(String vehicleRegNumber) {
 		Connection con = null;
-		int nbTicket = 1;
+		int nbTicket = 0;
 		try {
 			con = dataBaseConfig.getConnection();
 			PreparedStatement ps = con.prepareStatement(DBConstants.NB_TICKET);
@@ -98,7 +100,7 @@ public class TicketDAO {
 			ps.setString(1, vehicleRegNumber);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				nbTicket = rs.getInt("count(*)"); // result of column count(*)
+				nbTicket = rs.getInt("count(VEHICLE_REG_NUMBER)"); // result of column count(*)
 			}
 			dataBaseConfig.closeResultSet(rs);
 			dataBaseConfig.closePreparedStatement(ps);
@@ -107,8 +109,8 @@ public class TicketDAO {
 			logger.error("Errors when counting the number of times the car has already passed by", ex);
 		} finally {
 			dataBaseConfig.closeConnection(con);
-			return nbTicket;
 		}
+		return nbTicket;
 	}
 
 }

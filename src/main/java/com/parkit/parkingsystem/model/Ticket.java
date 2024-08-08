@@ -1,5 +1,6 @@
 package com.parkit.parkingsystem.model;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 
 public class Ticket {
@@ -39,7 +40,8 @@ public class Ticket {
 	}
 
 	public void setPrice(double price) {
-		this.price = price;
+		DecimalFormat df = new DecimalFormat("#.##");
+		this.price = Double.parseDouble(df.format(price).replace(',', '.'));
 	}
 
 	public Date getInTime() {
@@ -48,6 +50,7 @@ public class Ticket {
 
 	public void setInTime(Date inTime) {
 		this.inTime = inTime;
+
 	}
 
 	public Date getOutTime() {
@@ -57,4 +60,5 @@ public class Ticket {
 	public void setOutTime(Date outTime) {
 		this.outTime = outTime;
 	}
+
 }

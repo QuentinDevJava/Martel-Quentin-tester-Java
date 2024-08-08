@@ -3,6 +3,7 @@ package com.parkit.parkingsystem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -41,7 +42,9 @@ public class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 		fareCalculatorService.calculateFare(ticket);
-		assertEquals(ticket.getPrice(), Fare.CAR_RATE_PER_HOUR);
+
+		DecimalFormat df = new DecimalFormat("#.##");
+		assertEquals(Double.parseDouble(df.format(Fare.CAR_RATE_PER_HOUR).replace(',', '.')), ticket.getPrice());
 	}
 
 	@Test
@@ -55,7 +58,7 @@ public class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 		fareCalculatorService.calculateFare(ticket);
-		assertEquals(ticket.getPrice(), Fare.BIKE_RATE_PER_HOUR);
+		assertEquals(Fare.BIKE_RATE_PER_HOUR, ticket.getPrice());
 	}
 
 	@Test
@@ -96,7 +99,9 @@ public class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 		fareCalculatorService.calculateFare(ticket);
-		assertEquals((0.75 * Fare.BIKE_RATE_PER_HOUR), ticket.getPrice());
+		DecimalFormat df = new DecimalFormat("#.##");
+		assertEquals(Double.parseDouble(df.format(Fare.BIKE_RATE_PER_HOUR * 0.75).replace(',', '.')),
+				ticket.getPrice());
 	}
 
 	@Test
@@ -111,7 +116,8 @@ public class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 		fareCalculatorService.calculateFare(ticket);
-		assertEquals((0.75 * Fare.CAR_RATE_PER_HOUR), ticket.getPrice());
+		DecimalFormat df = new DecimalFormat("#.##");
+		assertEquals(Double.parseDouble(df.format(Fare.CAR_RATE_PER_HOUR * 0.75).replace(',', '.')), ticket.getPrice());
 	}
 
 	@Test
@@ -158,7 +164,7 @@ public class FareCalculatorServiceTest {
 	}
 
 	@Test
-	public void calculateFareCarWithDiscount() {
+	public void calculateFareCarWithDiscount() { // 5% discount
 		Date inTime = new Date();
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		Date outTime = new Date();
@@ -168,11 +174,12 @@ public class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 		fareCalculatorService.calculateFare(ticket, discount);
-		assertEquals(Fare.CAR_RATE_PER_HOUR * 0.95, ticket.getPrice());
+		DecimalFormat df = new DecimalFormat("#.##");
+		assertEquals(Double.parseDouble(df.format(Fare.CAR_RATE_PER_HOUR * 0.95).replace(',', '.')), ticket.getPrice());
 	}
 
 	@Test
-	public void calculateFareBikeWithDiscoun() {
+	public void calculateFareBikeWithDiscoun() { // 5% discount
 		Date inTime = new Date();
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		Date outTime = new Date();
@@ -182,6 +189,8 @@ public class FareCalculatorServiceTest {
 		ticket.setOutTime(outTime);
 		ticket.setParkingSpot(parkingSpot);
 		fareCalculatorService.calculateFare(ticket, discount);
-		assertEquals(Fare.BIKE_RATE_PER_HOUR * 0.95, ticket.getPrice());
+		DecimalFormat df = new DecimalFormat("#.##");
+		assertEquals(Double.parseDouble(df.format(Fare.BIKE_RATE_PER_HOUR * 0.95).replace(',', '.')),
+				ticket.getPrice());
 	}
 }
