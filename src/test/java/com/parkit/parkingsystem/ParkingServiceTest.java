@@ -73,13 +73,10 @@ public class ParkingServiceTest {
 	public void processExitingVehicleTestUnableUpdate() {
 		// GIVEN
 		when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(false);
-
 		// WHEN
 		parkingService.processExitingVehicle();
-		boolean result = ticketDAO.updateTicket(any(Ticket.class));
-
 		// THEN
-		assertEquals(false, result);
+		assertEquals(false, ticketDAO.updateTicket(any(Ticket.class)));
 	}
 
 	@Test

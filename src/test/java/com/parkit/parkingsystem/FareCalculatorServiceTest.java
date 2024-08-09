@@ -29,6 +29,7 @@ public class FareCalculatorServiceTest {
 	@BeforeEach
 	private void setUpPerTest() {
 		ticket = new Ticket();
+
 	}
 
 	@Test
@@ -179,7 +180,7 @@ public class FareCalculatorServiceTest {
 	}
 
 	@Test
-	public void calculateFareBikeWithDiscoun() { // 5% discount
+	public void calculateFareBikeWithDiscount() { // 5% discount
 		Date inTime = new Date();
 		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 		Date outTime = new Date();
@@ -192,5 +193,42 @@ public class FareCalculatorServiceTest {
 		DecimalFormat df = new DecimalFormat("#.##");
 		assertEquals(Double.parseDouble(df.format(Fare.BIKE_RATE_PER_HOUR * 0.95).replace(',', '.')),
 				ticket.getPrice());
+	}
+
+	@Test
+	public void calculateFareTimeError() {
+		Date inTime = new Date();
+		Date outTime = new Date();
+		outTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
+		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+		ticket.setInTime(inTime);
+		ticket.setOutTime(outTime);
+		ticket.setParkingSpot(parkingSpot);
+		assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket));
+	}
+
+	@Test
+	public void calculateFareWithParkingTypeError() {
+		Date inTime = new Date();
+		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
+		Date outTime = new Date();
+		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.PLANE, false);
+		ticket.setInTime(inTime);
+		ticket.setOutTime(outTime);
+		ticket.setParkingSpot(parkingSpot);
+		assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket));
+	}
+
+	@Test
+	public void calculateFareDiscountWithParkingTypeError() { // 5% discount
+		Date inTime = new Date();
+		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
+		Date outTime = new Date();
+		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.PLANE, false);
+		boolean discount = true;
+		ticket.setInTime(inTime);
+		ticket.setOutTime(outTime);
+		ticket.setParkingSpot(parkingSpot);
+		assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket, discount));
 	}
 }

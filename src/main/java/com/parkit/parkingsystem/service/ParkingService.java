@@ -40,7 +40,6 @@ public class ParkingService {
 				Date inTime = new Date();
 				Ticket ticket = new Ticket();
 				// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
-				// ticket.setId(ticketID);
 				ticket.setParkingSpot(parkingSpot);
 				ticket.setVehicleRegNumber(vehicleRegNumber);
 				ticket.setPrice(0);
@@ -49,11 +48,11 @@ public class ParkingService {
 				String dateFormatted = formatOutput.format(inTime);
 				ticket.setOutTime(null);
 				if (!ticketDAO.saveTicket(ticket)) {
-					throw new Exception(
+					throw new IllegalArgumentException(
 							"Error registering your ticket in the database. Your registration number is already in the database.");
 				}
 				int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
-				if (nbTicket > 1) {
+				if (nbTicket >= 1) {
 					System.out.println(
 							"Welcome back! As a regular user of our parking lot, you will receive a 5% discount.");
 				}
@@ -81,7 +80,8 @@ public class ParkingService {
 			if (parkingNumber > 0) {
 				parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
 			} else {
-				throw new Exception("Error fetching parking number from DB. Parking slots might be full");
+				throw new IllegalArgumentException(
+						"Error fetching parking number from DB. Parking slots might be full");
 			}
 		} catch (IllegalArgumentException ie) {
 			logger.error("Error parsing user input for type of vehicle", ie);
@@ -114,8 +114,9 @@ public class ParkingService {
 		try {
 			String vehicleRegNumber = getVehichleRegNumber();
 			Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
-			if (ticket == null) {
-				throw new Exception("Vehicle registration number does not match any vehicle in the database");
+			if (ticket.getOutTime() != null) {
+				throw new IllegalArgumentException(
+						"Vehicle registration number does not match any vehicle in the database");
 			}
 			Date outTime = new Date();
 
@@ -123,7 +124,7 @@ public class ParkingService {
 			ticket.setOutTime(outTime);
 			SimpleDateFormat formatOutput = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			String dateFormatted = formatOutput.format(outTime);
-			if (nbticket > 1) {
+			if (nbticket >= 1) {
 				fareCalculatorService.calculateFare(ticket, true);
 			} else {
 				fareCalculatorService.calculateFare(ticket);
