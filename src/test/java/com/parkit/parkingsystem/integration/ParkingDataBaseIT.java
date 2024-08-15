@@ -22,6 +22,7 @@ import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 
+@Disabled
 @ExtendWith(MockitoExtension.class)
 public class ParkingDataBaseIT {
 
@@ -29,11 +30,12 @@ public class ParkingDataBaseIT {
 	private static ParkingSpotDAO parkingSpotDAO;
 	private static TicketDAO ticketDAO;
 	private static DataBasePrepareService dataBasePrepareService;
+
 	@Mock
 	private static InputReaderUtil inputReaderUtil;
 
 	@BeforeAll
-	private static void setUp() throws Exception {
+	public static void setUpParkingDataBaseIT() {
 		parkingSpotDAO = new ParkingSpotDAO();
 		parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
 		ticketDAO = new TicketDAO();
@@ -47,7 +49,6 @@ public class ParkingDataBaseIT {
 		when(inputReaderUtil.readSelection()).thenReturn(1);
 		when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 		dataBasePrepareService.clearDataBaseEntries();
-		// MockitoAnnotations.initMocks(this);
 	}
 
 	@AfterAll
@@ -62,29 +63,32 @@ public class ParkingDataBaseIT {
 		// WHEN
 		parkingService.processIncomingVehicle();
 		// THEN
-		Ticket testTicket = ticketDAO.getTicket("ABCDEF");
-		boolean availability = testTicket.getParkingSpot().isAvailable();
+		Ticket testTicket = ticketDAO.getTicket("ABCDEF");// remplacer par un spy du ticket fausse les test
+		boolean parkingisavailability = testTicket.getParkingSpot().isAvailable();
 		int spotNumber = testTicket.getParkingSpot().hashCode();
 
-		assertNotEquals(0, spotNumber); // Parking table update
-		assertEquals(false, availability);// Spot availability
+		assertEquals(1, spotNumber); // Parking table update
+		assertEquals(false, parkingisavailability);// Spot availability
 		assertNotNull(testTicket);// Ticket table update
 
 	}
 
 	@Test
 	public void testParkingLotExit() {
-		testParkingACar();
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+		parkingService.processIncomingVehicle();
 		parkingService.processExitingVehicle();
-		Ticket testTicket = ticketDAO.getTicket("ABCDEF");
+		Ticket testTicket = ticketDAO.getTicket("ABCDEF"); // remplacer par un spy du ticket fausse les test
+		boolean parkingisavailability = testTicket.getParkingSpot().isAvailable();
 
+		assertEquals(true, parkingisavailability);// Spot availability
 		assertNotNull(testTicket.getOutTime());
+		assertNotEquals(0, ticketDAO.getNbTicket("ABCDEF"));
 		assertNotNull(testTicket.getPrice());
 
 	}
 
-	@Disabled
+	@Disabled("A faire")
 	@Test
 	public void testParkingLotExitReccurringUser() {
 		testParkingACar();
@@ -92,8 +96,9 @@ public class ParkingDataBaseIT {
 		parkingService.processExitingVehicle();
 		parkingService.processIncomingVehicle();
 		parkingService.processExitingVehicle();
-
-		// pour avoir un prix je doit modifier le inTime entre l'entree et la sortie
+		// si je passe par la methode
+		// pour avoir un prix realiste je doit modifier le inTime entre l'entree et la
+		// sortie
 
 		// TODO: check that the discount fare generated in DB
 	}

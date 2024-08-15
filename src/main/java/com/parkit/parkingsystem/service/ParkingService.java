@@ -36,7 +36,6 @@ public class ParkingService {
 				String vehicleRegNumber = getVehichleRegNumber();
 				parkingSpot.setAvailable(false);
 				parkingSpotDAO.updateParking(parkingSpot);// allot this parking space and mark it's availability as
-															// false
 				Date inTime = new Date();
 				Ticket ticket = new Ticket();
 				// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
@@ -47,7 +46,10 @@ public class ParkingService {
 				SimpleDateFormat formatOutput = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 				String dateFormatted = formatOutput.format(inTime);
 				ticket.setOutTime(null);
-				if (!ticketDAO.saveTicket(ticket)) {
+				if (!ticketDAO.saveTicket(ticket)) { // Erreur si timeOut != null /!\ place de parking dois etre
+														// disponible
+					// parkingSpot.setAvailable(true);
+					// parkingSpotDAO.updateParking(parkingSpot);
 					throw new IllegalArgumentException(
 							"Error registering your ticket in the database. Your registration number is already in the database.");
 				}
