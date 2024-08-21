@@ -42,8 +42,9 @@ public class ParkingServiceTest {
 	@BeforeEach
 	public void setUpPerTestParkingServiceTest() {
 		try {
-			lenient().when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");// numero de la plaque
-			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false); // place de parking N°, TYPE, LIBRE
+			lenient().when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+
+			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false); //
 
 			Ticket ticket = new Ticket();// creation du ticket
 			ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
@@ -55,6 +56,7 @@ public class ParkingServiceTest {
 			lenient().when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
 
 			parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Failed to set up test mock objects");
