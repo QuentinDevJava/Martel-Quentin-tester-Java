@@ -30,12 +30,12 @@ public class FareCalculatorServiceTest {
 	}
 
 	@BeforeEach
-	private void setUpPerTest() {
+	public void setUpPerTest() {
 		ticket = new Ticket();
 	}
 
 	@AfterEach
-	private void undefFareCalculatorService() {
+	public void undefFareCalculatorService() {
 		ticket = null;
 	}
 
@@ -44,7 +44,7 @@ public class FareCalculatorServiceTest {
 	class ErrorOfFareCalculatorService {
 
 		@Test
-		public void calculateFareUnkownType() {
+		void calculateFareUnknownType() {
 			// GIVEN
 			Date inTime = new Date();
 			inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));// Time 1h
@@ -116,7 +116,8 @@ public class FareCalculatorServiceTest {
 			ticket.setParkingSpot(parkingSpot);
 			// THEN
 
-			assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket, discount));
+//			assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket, discount));
+			assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket));
 		}
 	}
 
@@ -286,12 +287,13 @@ public class FareCalculatorServiceTest {
 			inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 			Date outTime = new Date();
 			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-			boolean discount = true;
 			ticket.setInTime(inTime);
 			ticket.setOutTime(outTime);
 			ticket.setParkingSpot(parkingSpot);
+			ticket.setDiscount(true);
 			// WHEN
-			fareCalculatorService.calculateFare(ticket, discount);
+			fareCalculatorService.calculateFare(ticket);
+//			fareCalculatorService.calculateFare(ticket, discount);
 			// THEN
 
 			DecimalFormat df = new DecimalFormat("#.##");
@@ -306,12 +308,13 @@ public class FareCalculatorServiceTest {
 			inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 			Date outTime = new Date();
 			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
-			boolean discount = true;
 			ticket.setInTime(inTime);
 			ticket.setOutTime(outTime);
 			ticket.setParkingSpot(parkingSpot);
+			ticket.setDiscount(true);
 			// WHEN
-			fareCalculatorService.calculateFare(ticket, discount);
+			fareCalculatorService.calculateFare(ticket);
+//			fareCalculatorService.calculateFare(ticket, discount);
 			// THEN
 
 			DecimalFormat df = new DecimalFormat("#.##");

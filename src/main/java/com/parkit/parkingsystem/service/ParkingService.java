@@ -33,9 +33,10 @@ public class ParkingService {
 		try {
 			ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
 			if (parkingSpot != null && parkingSpot.getId() > 0) {
-				String vehicleRegNumber = getVehichleRegNumber();
+				String vehicleRegNumber = getVehicleRegNumber();
 				parkingSpot.setAvailable(false);
 				parkingSpotDAO.updateParking(parkingSpot);
+
 				Date inTime = new Date();
 				Ticket ticket = new Ticket();
 				// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
@@ -46,30 +47,47 @@ public class ParkingService {
 				SimpleDateFormat formatOutput = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 				String dateFormatted = formatOutput.format(inTime);
 				ticket.setOutTime(null);
-				if (!ticketDAO.saveTicket(ticket)) {
-					parkingSpot.setAvailable(true);
-					parkingSpotDAO.updateParking(parkingSpot);
-					System.out.println(
-							"Error registering your ticket in the database. Your registration number is already in the database.");
-					throw new IllegalArgumentException(
-							"Error registering your ticket in the database. Your registration number is already in the database.");
+
+				// TODO utiliser Log4J
+				if (isRegularUser(vehicleRegNumber)) {
+					ticket.setDiscount(true);
+					System.out.println("Welcome back! As a regular user of our parking lot, you will receive a 5% discount.");
+
 				}
-				int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
-				if (nbTicket >= 1) {
-					System.out.println(
-							"Welcome back! As a regular user of our parking lot, you will receive a 5% discount.");
-				}
+
+				ticketDAO.saveTicket(ticket);
 				System.out.println("Generated Ticket and saved in DB");
 				System.out.println("Please park your vehicle in spot number: " + parkingSpot.getId());
-				System.out
-						.println("Recorded in-time for vehicle number: " + vehicleRegNumber + " is: " + dateFormatted);
+				System.out.println("Recorded in-time for vehicle number: " + vehicleRegNumber + " is: " + dateFormatted);
+//
+//				if (!ticketDAO.saveTicket(ticket)) {
+//					parkingSpot.setAvailable(true);
+//					parkingSpotDAO.updateParking(parkingSpot);
+//					System.out.println(
+//							"Error registering your ticket in the database. Your registration number is already in the database.");
+//					throw new IllegalArgumentException(
+//							"Error registering your ticket in the database. Your registration number is already in the database.");
+//				}
+//				int nbTicket = ticketDAO.getNbTicket(vehicleRegNumber);
+//				if (nbTicket >= 1) {
+//					System.out.println(
+//							"Welcome back! As a regular user of our parking lot, you will receive a 5% discount.");
+//				}
+//				System.out.println("Generated Ticket and saved in DB");
+//				System.out.println("Please park your vehicle in spot number: " + parkingSpot.getId());
+//				System.out
+//						.println("Recorded in-time for vehicle number: " + vehicleRegNumber + " is: " + dateFormatted);
 			}
 		} catch (Exception e) {
 			logger.error("Unable to process incoming vehicle", e);
 		}
 	}
 
-	private String getVehichleRegNumber() throws Exception {
+	private boolean isRegularUser(String vehicleRegNumber) {
+		return ticketDAO.getNbTicket(vehicleRegNumber) >= 1;
+	}
+
+	private String getVehicleRegNumber() throws Exception {
 		System.out.println("Please type the vehicle registration number and press enter key");
 		return inputReaderUtil.readVehicleRegistrationNumber();
 	}
@@ -115,7 +133,7 @@ public class ParkingService {
 
 	public void processExitingVehicle() {
 		try {
-			String vehicleRegNumber = getVehichleRegNumber();
+			String vehicleRegNumber = getVehicleRegNumber();
 			Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
 			if (ticket.getOutTime() != null) {
 				System.out.println("Vehicle registration number does not match any vehicle in the database");
@@ -123,15 +141,11 @@ public class ParkingService {
 						"Vehicle registration number does not match any vehicle in the database");
 			}
 			Date outTime = new Date();
-			int nbticket = ticketDAO.getNbTicket(vehicleRegNumber);
 			ticket.setOutTime(outTime);
 			SimpleDateFormat formatOutput = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			String dateFormatted = formatOutput.format(outTime);
-			if (nbticket >= 1) {
-				fareCalculatorService.calculateFare(ticket, true);
-			} else {
-				fareCalculatorService.calculateFare(ticket);
-			}
+
+			fareCalculatorService.calculateFare(ticket);
 
 			if (ticketDAO.updateTicket(ticket)) {
 				ParkingSpot parkingSpot = ticket.getParkingSpot();
