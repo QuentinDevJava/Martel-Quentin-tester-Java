@@ -8,10 +8,10 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.parkit.parkingsystem.constants.ParkingType;
@@ -30,8 +30,6 @@ public class ParkingDataBaseIT {
 	private static ParkingSpotDAO parkingSpotDAO;
 	private static DataBasePrepareService dataBasePrepareService;
 	private static TicketDAO ticketDAO;
-	@Spy
-	Ticket spyTicket = new Ticket();
 
 	@Mock
 	private static InputReaderUtil inputReaderUtil;
@@ -58,6 +56,7 @@ public class ParkingDataBaseIT {
 
 	}
 
+	@DisplayName("Test l'entrée d'un veichule")
 	@Test
 	public void testParkingACar() {
 		// GIVEN
@@ -75,6 +74,7 @@ public class ParkingDataBaseIT {
 				() -> Assertions.assertNotNull(testTicket, "Error Ticket table not update"));
 	}
 
+	@DisplayName("Test la sortie d'un veichule")
 	@Test
 	public void testParkingLotExit() {
 		// GIVEN
@@ -92,6 +92,7 @@ public class ParkingDataBaseIT {
 				() -> Assertions.assertNotNull((testTicket.getOutTime()), "Error ticket out time = null"));
 	}
 
+	@DisplayName("Test l'entrée d'un veichiule dans le cas d’un utilisateur récurrent.")
 	@Test
 	public void testParkingLotExitReccurringUser() {
 
@@ -100,14 +101,14 @@ public class ParkingDataBaseIT {
 		parkingService.processIncomingVehicle();
 		parkingService.processExitingVehicle();
 		parkingService.processIncomingVehicle();
+		parkingService.processExitingVehicle();
 
 		int testNbTicket = ticketDAO.getNbTicket("ABCDEF");
 
-		assertEquals(1, testNbTicket); // testNbTicket>=1 then discount fare
+		assertEquals(2, testNbTicket); // testNbTicket>=1 then discount fare true
 
 		// pour avoir un prix realiste a tester, je dois modifier le inTime entre
 		// l'entree et la sortie du veichule
 		// ou comme la valeur de getNbTicket est > 2 c'est ok ?
 	}
-
 }

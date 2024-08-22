@@ -49,7 +49,8 @@ public class ParkingService {
 				if (!ticketDAO.saveTicket(ticket)) {
 					parkingSpot.setAvailable(true);
 					parkingSpotDAO.updateParking(parkingSpot);
-					System.out.println("Incorrect input provided");
+					System.out.println(
+							"Error registering your ticket in the database. Your registration number is already in the database.");
 					throw new IllegalArgumentException(
 							"Error registering your ticket in the database. Your registration number is already in the database.");
 				}
@@ -117,11 +118,11 @@ public class ParkingService {
 			String vehicleRegNumber = getVehichleRegNumber();
 			Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
 			if (ticket.getOutTime() != null) {
+				System.out.println("Vehicle registration number does not match any vehicle in the database");
 				throw new IllegalArgumentException(
 						"Vehicle registration number does not match any vehicle in the database");
 			}
 			Date outTime = new Date();
-
 			int nbticket = ticketDAO.getNbTicket(vehicleRegNumber);
 			ticket.setOutTime(outTime);
 			SimpleDateFormat formatOutput = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");

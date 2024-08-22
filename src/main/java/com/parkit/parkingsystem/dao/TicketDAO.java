@@ -16,7 +16,7 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class TicketDAO {
 
-	private static final Logger logger = LogManager.getLogger("TicketDAO");
+	private static final Logger logger = LogManager.getLogger(TicketDAO.class.getName());
 
 	public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
@@ -35,7 +35,6 @@ public class TicketDAO {
 				ps.setString(6, ticket.getVehicleRegNumber());
 
 				int updateRowCount = ps.executeUpdate();
-
 				return (updateRowCount == 1);
 			}
 		} catch (Exception ex) {
