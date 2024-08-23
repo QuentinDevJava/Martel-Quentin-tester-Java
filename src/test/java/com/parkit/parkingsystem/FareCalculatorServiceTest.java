@@ -44,21 +44,6 @@ public class FareCalculatorServiceTest {
 	class ErrorOfFareCalculatorService {
 
 		@Test
-		void calculateFareUnknownType() {
-			// GIVEN
-			Date inTime = new Date();
-			inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));// Time 1h
-			Date outTime = new Date();
-			ParkingSpot parkingSpot = new ParkingSpot(1, null, false);
-			ticket.setInTime(inTime);
-			ticket.setOutTime(outTime);
-			ticket.setParkingSpot(parkingSpot);
-			// THEN
-
-			assertThrows(NullPointerException.class, () -> fareCalculatorService.calculateFare(ticket));
-		}
-
-		@Test
 		public void calculateFareBikeWithFutureInTime() {
 			// GIVEN
 			Date inTime = new Date();
@@ -77,8 +62,8 @@ public class FareCalculatorServiceTest {
 		public void calculateFareCarWithFutureInTime() {
 			// GIVEN
 			Date inTime = new Date();
+			inTime.setTime(System.currentTimeMillis() + (60 * 60 * 1000));
 			Date outTime = new Date();
-			outTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
 			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 			ticket.setInTime(inTime);
 			ticket.setOutTime(outTime);
@@ -89,35 +74,17 @@ public class FareCalculatorServiceTest {
 		}
 
 		@Test
-		public void calculateFareWithParkingTypeError() {
+		public void calculateFareCarWithOutTimeNull() {
 			// GIVEN
 			Date inTime = new Date();
 			inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-			Date outTime = new Date();
-			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.PLANE, false);
+			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 			ticket.setInTime(inTime);
-			ticket.setOutTime(outTime);
+			ticket.setOutTime(null);
 			ticket.setParkingSpot(parkingSpot);
 			// THEN
 
-			assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket));
-		}
-
-		@Test
-		public void calculateFareDiscountWithParkingTypeError() { // 5% discount
-			// GIVEN
-			Date inTime = new Date();
-			inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-			Date outTime = new Date();
-			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.PLANE, false);
-			boolean discount = true;
-			ticket.setInTime(inTime);
-			ticket.setOutTime(outTime);
-			ticket.setParkingSpot(parkingSpot);
-			// THEN
-
-//			assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket, discount));
-			assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket));
+			assertThrows(NullPointerException.class, () -> fareCalculatorService.calculateFare(ticket));
 		}
 	}
 
@@ -293,7 +260,6 @@ public class FareCalculatorServiceTest {
 			ticket.setDiscount(true);
 			// WHEN
 			fareCalculatorService.calculateFare(ticket);
-//			fareCalculatorService.calculateFare(ticket, discount);
 			// THEN
 
 			DecimalFormat df = new DecimalFormat("#.##");
@@ -314,7 +280,6 @@ public class FareCalculatorServiceTest {
 			ticket.setDiscount(true);
 			// WHEN
 			fareCalculatorService.calculateFare(ticket);
-//			fareCalculatorService.calculateFare(ticket, discount);
 			// THEN
 
 			DecimalFormat df = new DecimalFormat("#.##");

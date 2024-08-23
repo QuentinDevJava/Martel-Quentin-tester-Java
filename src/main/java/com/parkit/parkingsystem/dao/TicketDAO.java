@@ -32,10 +32,7 @@ public class TicketDAO {
 				ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
 				ps.setTimestamp(5,
 						(ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
-				ps.setString(6, ticket.getVehicleRegNumber());
-
-				int updateRowCount = ps.executeUpdate();
-				return (updateRowCount == 1);
+				return ps.execute();
 			}
 		} catch (Exception ex) {
 			logger.error("Error fetching next available slot", ex);
@@ -51,7 +48,6 @@ public class TicketDAO {
 		try {
 			con = dataBaseConfig.getConnection();
 			try (PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET)) {
-				// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
 				ps.setString(1, vehicleRegNumber);
 				ResultSet rs = ps.executeQuery();
 				if (rs.next()) {
@@ -101,7 +97,6 @@ public class TicketDAO {
 		try {
 			con = dataBaseConfig.getConnection();
 			try (PreparedStatement ps = con.prepareStatement(DBConstants.NB_TICKET)) {
-				// count(*) FROM ticket t where t.VEHICLE_REG_NUMBER)
 				ps.setString(1, vehicleRegNumber);
 				ResultSet rs = ps.executeQuery();
 				if (rs.next()) {
@@ -119,4 +114,24 @@ public class TicketDAO {
 		return nbTicket;
 	}
 
+	public boolean ticketIsInDatabaseWithOutTimeNull(String vehicleRegNumber) {
+		Connection con = null;
+		int ticketRowExist = 0;
+		try {
+			con = dataBaseConfig.getConnection();
+			try (PreparedStatement ps = con.prepareStatement(DBConstants.TICKET_AWAITS_RELEASE)) {
+				ps.setString(1, vehicleRegNumber);
+				ResultSet ticketExist = ps.executeQuery();
+				if (ticketExist.next()) {
+					ticketRowExist = ticketExist.getInt("count(VEHICLE_REG_NUMBER)");
+				}
+				return (ticketRowExist == 1);
+			}
+		} catch (Exception ex) {
+			logger.error("Error checking whether your ticket is in the database.", ex);
+		} finally {
+			dataBaseConfig.closeConnection(con);
+		}
+		return true;
+	}
 }

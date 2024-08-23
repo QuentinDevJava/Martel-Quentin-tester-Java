@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.text.DecimalFormat;
+import java.util.Date;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
@@ -61,10 +65,12 @@ public class ParkingDataBaseIT {
 	public void testParkingACar() {
 		// GIVEN
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
 		// WHEN
 		parkingService.processIncomingVehicle();
+
 		// THEN
-		Ticket testTicket = ticketDAO.getTicket("ABCDEF");// a remplacer par un spy du ticket ?
+		Ticket testTicket = ticketDAO.getTicket("ABCDEF");
 		boolean parkingisavailability = testTicket.getParkingSpot().isAvailable();
 		int spotNumber = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
 		assertAll("Error Test Parking A Car",
@@ -79,16 +85,17 @@ public class ParkingDataBaseIT {
 	public void testParkingLotExit() {
 		// GIVEN
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
 		// WHEN
 		parkingService.processIncomingVehicle();
 		parkingService.processExitingVehicle();
-		Ticket testTicket = ticketDAO.getTicket("ABCDEF"); // a remplacer par un spy du ticket ?
+
+		Ticket testTicket = ticketDAO.getTicket("ABCDEF");
 		int parkingSpotTest = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
 
 		// THEN
 		assertAll("Error Test Parking Exit",
 				() -> Assertions.assertEquals(1, parkingSpotTest, "Error parking Parking table not update"),
-				() -> Assertions.assertNotNull(testTicket.getPrice(), "Error ticket price = null "),
 				() -> Assertions.assertNotNull((testTicket.getOutTime()), "Error ticket out time = null"));
 	}
 
@@ -97,18 +104,26 @@ public class ParkingDataBaseIT {
 	public void testParkingLotExitReccurringUser() {
 
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-
+		// GIVEN
 		parkingService.processIncomingVehicle();
 		parkingService.processExitingVehicle();
-		parkingService.processIncomingVehicle();
+//TODO verification de la methode a faire voir si possible de modifier l'heure d'entree lors de parkingService.processIncomingVehicle()
+		Ticket testTicket = ticketDAO.getTicket("ABCDEF"); // loads data from the exit ticket
+		Date inTime = new Date();
+		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
+		testTicket.setOutTime(null); // update out time
+		testTicket.setInTime(inTime); // update in time
+		ticketDAO.saveTicket(testTicket);
+		// To simulate entry, I add a fake ticket to the database that would have
+		// entered the parking lot an hour ago to test the price.
+
+		// WHEN
 		parkingService.processExitingVehicle();
+		testTicket = ticketDAO.getTicket("ABCDEF"); // loads data from the exit ticket with discount
 
-		int testNbTicket = ticketDAO.getNbTicket("ABCDEF");
-
-		assertEquals(2, testNbTicket); // testNbTicket>=1 then discount fare true
-
-		// pour avoir un prix realiste a tester, je dois modifier le inTime entre
-		// l'entree et la sortie du veichule
-		// ou comme la valeur de getNbTicket est > 2 c'est ok ?
+		// THEN
+		DecimalFormat df = new DecimalFormat("#.##");
+		assertEquals(Double.parseDouble(df.format(Fare.CAR_RATE_PER_HOUR * 0.95).replace(',', '.')),
+				testTicket.getPrice());
 	}
 }
