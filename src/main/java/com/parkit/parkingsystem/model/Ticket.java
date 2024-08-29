@@ -14,6 +14,7 @@ public class Ticket {
 	private double price;
 	private Date inTime;
 	private Date outTime;
+	private boolean discount;
 
 	public int getId() {
 		return id;
@@ -42,8 +43,6 @@ public class Ticket {
 	public double getPrice() {
 		return price;
 	}
-
-	public boolean discount;
 
 	public void setPrice(double price) {
 		DecimalFormat df = new DecimalFormat("#.##");

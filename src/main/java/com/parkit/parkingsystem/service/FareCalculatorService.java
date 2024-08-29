@@ -5,7 +5,7 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
-	public static final String UNKNOWN_PARKING_TYPE = "Unknown Parking Type";
+	public static final String UNKNOWN_PARKING_TYPE = " : Parking Type not managed";
 
 	public void calculateFare(Ticket ticket) {
 		if (ticket.isInvalidTime()) {
@@ -15,8 +15,7 @@ public class FareCalculatorService {
 		switch (ticket.getParkingSpot().getParkingType()) {
 		case CAR -> ticket.computePrice(Fare.CAR_RATE_PER_HOUR);
 		case BIKE -> ticket.computePrice(Fare.BIKE_RATE_PER_HOUR);
-		default -> throw new IllegalArgumentException(UNKNOWN_PARKING_TYPE);
-		// TODO default est utile ? impossible a tester ?
+		default -> throw new IllegalArgumentException(ticket.getParkingSpot().getParkingType() + UNKNOWN_PARKING_TYPE);
 		}
 	}
 

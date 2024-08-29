@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="assembly">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:string" />
+				<xs:element name="formats">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="format" type="xs:string" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="includeBaseDirectory" type="xs:string" />
+				<xs:element name="dependencySets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="dependencySet">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="unpack" type="xs:string" />
+										<xs:element name="scope" type="xs:string" />
+										<xs:element name="useProjectArtifact" type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="fileSets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="fileSet">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="directory" type="xs:string" />
+										<xs:element name="outputDirectory" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

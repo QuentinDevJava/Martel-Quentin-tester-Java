@@ -6,6 +6,7 @@ import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.parkit.parkingsystem.constants.MenuConstants;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
@@ -34,8 +35,7 @@ public class ParkingService {
 			ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
 			if (parkingSpot != null && parkingSpot.getId() > 0) {
 				String vehicleRegNumber = getVehicleRegNumber();
-				if (!ticketDAO.ticketIsInDatabaseWithOutTimeNull(vehicleRegNumber)) {// The ticket not exists in
-																						// database
+				if (!ticketDAO.ticketIsInDatabaseWithOutTimeNull(vehicleRegNumber)) {// The ticket not exists
 					// allocated parking spot
 					parkingSpot.setAvailable(false);
 					parkingSpotDAO.updateParking(parkingSpot);
@@ -62,7 +62,7 @@ public class ParkingService {
 					System.out.println(
 							"Recorded in-time for vehicle number: " + vehicleRegNumber + " is: " + dateFormatted);
 
-				} else { // The ticket exists in database
+				} else { // The ticket exists
 
 					System.out.println(
 							"Error registering your ticket in the database. Your registration number is already in the database.");
@@ -81,10 +81,10 @@ public class ParkingService {
 			String vehicleRegNumber = getVehicleRegNumber();
 			Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
 			if (ticket.getOutTime() != null) {
-				System.out.println("Vehicle registration number does not match any vehicle in the database");
 				throw new IllegalArgumentException(
 						"Vehicle registration number does not match any vehicle in the database");
 			}
+
 			Date outTime = new Date();
 			ticket.setOutTime(outTime);
 			SimpleDateFormat formatOutput = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -93,6 +93,7 @@ public class ParkingService {
 			if (isRegularUser(vehicleRegNumber)) {
 				ticket.setDiscount(true);
 			}
+
 			fareCalculatorService.calculateFare(ticket);
 
 			if (ticketDAO.updateTicket(ticket)) {
@@ -105,7 +106,11 @@ public class ParkingService {
 			} else {
 				System.out.println("Unable to update ticket information. Error occurred");
 			}
-		} catch (Exception e) {
+		} catch (IllegalArgumentException | NullPointerException e) {
+			System.out.println("""
+					Vehicle registration number does not match any vehicle in the database.
+					Unable to process exiting vehicle.
+					""");
 			logger.error("Unable to process exiting vehicle", e);
 		}
 	}
@@ -124,6 +129,7 @@ public class ParkingService {
 			if (parkingNumber > 0) {
 				parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
 			} else {
+				System.out.println("Error fetching parking number from DB. Parking slots might be full");
 				throw new IllegalArgumentException(
 						"Error fetching parking number from DB. Parking slots might be full");
 			}
@@ -136,9 +142,7 @@ public class ParkingService {
 	}
 
 	private ParkingType getVehichleType() {
-		System.out.println("Please select vehicle type from menu");
-		System.out.println("1 CAR");
-		System.out.println("2 BIKE");
+		System.out.println(MenuConstants.SELECTMENU);
 		int input = inputReaderUtil.readSelection();
 		return switch (input) {
 		case 1 -> ParkingType.CAR;

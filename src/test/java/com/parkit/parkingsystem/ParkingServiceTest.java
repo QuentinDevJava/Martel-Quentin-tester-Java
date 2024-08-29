@@ -232,11 +232,40 @@ public class ParkingServiceTest {
 		}
 
 		@Test
+		public void processExitingVehicleTestUnableParkingType() {
+			// GIVEN
+			try {
+				when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");// Vehicle Registration
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException("Failed to set up test mock objects");
+			}
+
+			// Creation du ticket
+			ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.NO_PARKING_TYPETEST, false);
+			Ticket ticket = new Ticket();
+			ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
+			ticket.setParkingSpot(parkingSpot);
+			ticket.setVehicleRegNumber("ABCDEF");
+			ticket.setOutTime(null);
+
+			when(ticketDAO.getTicket(anyString())).thenReturn(ticket); // OK
+			// when(ticketDAO.updateTicket(ticket)).thenReturn(true);// OK
+
+			parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
+			// WHEN
+			parkingService.processExitingVehicle();
+			// THEN
+			verify(parkingSpotDAO, Mockito.times(0)).updateParking(any(ParkingSpot.class));
+		}
+
+		@Test
 		public void testProcessExitingVehicleIfRegistrationNumbeError() {
 			// GIVEN
 			try {
 				when(inputReaderUtil.readVehicleRegistrationNumber())
-						.thenThrow(new RuntimeException("Unable to process exiting vehicle"));
+						.thenThrow(new IllegalArgumentException("Unable to process exiting vehicle"));
 
 			} catch (Exception e) {
 				e.printStackTrace();
