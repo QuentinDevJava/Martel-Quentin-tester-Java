@@ -78,7 +78,7 @@ public class ParkingDataBaseIT {
 				() -> Assertions.assertNotNull(testTicket, "Error Ticket table not update"));
 	}
 
-	@DisplayName("Test la sortie d'un veichule")
+	@DisplayName("Test la sortie d'un veichule inferieur a 30 min")
 	@Test
 	public void testParkingLotExit() {
 		// GIVEN
@@ -95,6 +95,33 @@ public class ParkingDataBaseIT {
 		assertAll("Error Test Parking Exit",
 				() -> Assertions.assertEquals(1, parkingSpotTest, "Error parking Parking table not update"),
 				() -> Assertions.assertNotNull((testTicket.getOutTime()), "Error ticket out time = null"));
+	}
+
+	@DisplayName("Test la sortie d'un veichule supperieur a 30 min")
+	@Test
+	public void testParkingExit1h() {
+		// GIVEN
+		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
+		// WHEN
+		parkingService.processIncomingVehicle();
+
+		Ticket testTicket = ticketDAO.getTicket("ABCDEF"); // loads data from the exit ticket
+		Date inTime = new Date();
+		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
+		testTicket.setOutTime(null); // update out time
+		testTicket.setInTime(inTime); // update in time
+		ticketDAO.saveTicket(testTicket);
+
+		parkingService.processExitingVehicle();
+
+		Ticket verifTicket = ticketDAO.getTicket("ABCDEF");
+		int parkingSpotTest = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
+
+		// THEN
+		assertAll("Error Test Parking Exit",
+				() -> Assertions.assertEquals(1, parkingSpotTest, "Error parking Parking table not update"),
+				() -> Assertions.assertNotNull((verifTicket.getOutTime()), "Error ticket out time = null"));
 	}
 
 	@DisplayName("Test l'entrée d'un veichiule dans le cas d’un utilisateur récurrent.")

@@ -1,8 +1,9 @@
 package com.parkit.parkingsystem.config;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,7 +32,7 @@ public class DataBaseConfig {
 
 			try (Connection con = DriverManager.getConnection(DBConstants.URLMYSQL, DBConstants.LOGIN,
 					DBConstants.PASSWORD)) {
-				executeSqlFromFile(con, "src\\resources\\Data.sql");
+				executeSqlFromFile(con, "Data.sql");
 				logger.info("the databases is created");
 			} catch (SQLException e1) {
 				e.printStackTrace();
@@ -49,8 +50,13 @@ public class DataBaseConfig {
 
 	private static void executeSqlFromFile(Connection con, String filePath) {
 		try (Statement stmt = con.createStatement();
-				FileReader fr = new FileReader(filePath);
-				BufferedReader br = new BufferedReader(fr)) {
+				InputStream inputStream = DataBaseConfig.class.getClassLoader().getResourceAsStream(filePath);
+				BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+
+			if (inputStream == null) {
+				logger.error("File not found: " + filePath);
+				return;
+			}
 
 			String strCurrentLine;
 			while ((strCurrentLine = br.readLine()) != null) {

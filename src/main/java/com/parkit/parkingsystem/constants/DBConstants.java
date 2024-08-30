@@ -10,7 +10,7 @@ public class DBConstants {
 	public static final String URLTEST = "jdbc:mysql://localhost:3306/test";
 	public static final String URLPROD = "jdbc:mysql://localhost:3306/prod";
 	public static final String LOGIN = "root";
-	public static final String PASSWORD = "rootroot";
+	public static final String PASSWORD = "";
 
 	// private static final String URLMYSQL = "jdbc:mysql://localhost:3307/mysql";
 	// private static final String URLTEST = "jdbc:mysql://localhost:3306/test";

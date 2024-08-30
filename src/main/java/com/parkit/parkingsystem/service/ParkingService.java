@@ -57,10 +57,11 @@ public class ParkingService {
 								"Welcome back! As a regular user of our parking lot, you will receive a 5% discount.");
 					}
 					ticketDAO.saveTicket(ticket);
-					System.out.println("Generated Ticket and saved in DB");
-					System.out.println("Please park your vehicle in spot number: " + parkingSpot.getId());
-					System.out.println(
-							"Recorded in-time for vehicle number: " + vehicleRegNumber + " is: " + dateFormatted);
+					System.out.println("""
+
+							Generated Ticket and saved in DB
+							""" + "Please park your vehicle in spot number: " + parkingSpot.getId()
+							+ " Recorded in-time for vehicle number: " + vehicleRegNumber + " is " + dateFormatted);
 
 				} else { // The ticket exists
 
@@ -100,8 +101,11 @@ public class ParkingService {
 				ParkingSpot parkingSpot = ticket.getParkingSpot();
 				parkingSpot.setAvailable(true);
 				parkingSpotDAO.updateParking(parkingSpot);
-				System.out.println("Please pay the parking fare:" + ticket.getPrice());
-				System.out.println("Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:"
+				System.out.println("""
+
+						Please pay the parking fare: """ + ticket.getPrice() + """
+
+						Recorded out-time for vehicle number:""" + ticket.getVehicleRegNumber() + " is: "
 						+ dateFormatted);
 			} else {
 				System.out.println("Unable to update ticket information. Error occurred");
@@ -116,7 +120,9 @@ public class ParkingService {
 	}
 
 	private String getVehicleRegNumber() throws IllegalArgumentException {
-		System.out.println("Please type the vehicle registration number and press enter key");
+		System.out.println("""
+
+				Please type the vehicle registration number and press enter key""");
 		return inputReaderUtil.readVehicleRegistrationNumber();
 	}
 
