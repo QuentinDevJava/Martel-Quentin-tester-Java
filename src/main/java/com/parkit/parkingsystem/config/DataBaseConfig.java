@@ -23,28 +23,37 @@ public class DataBaseConfig {
 		return DriverManager.getConnection(DBConstants.URLPROD, DBConstants.LOGIN, DBConstants.PASSWORD);
 	}
 
-	public static void initConnection() {
-		try (Connection con = DriverManager.getConnection(DBConstants.URLPROD, DBConstants.LOGIN,
+	public static boolean isConnected() {
+		try (Connection connection = DriverManager.getConnection(DBConstants.URLPROD, DBConstants.LOGIN,
 				DBConstants.PASSWORD)) {
-			logger.info("prod and test databases exist");
+			logger.info("Connection to prod and test databases established successfully.");
+			return true;
 		} catch (SQLException e) {
-			logger.info("the databases do not exist, start creating the databases(prod and test) in mysql");
+			logger.warn("Failed to connect to the databases (prod and test): {}", e.getMessage());
+			return false;
+		}
+	}
 
-			try (Connection con = DriverManager.getConnection(DBConstants.URLMYSQL, DBConstants.LOGIN,
-					DBConstants.PASSWORD)) {
-				executeSqlFromFile(con, "Data.sql");
-				logger.info("the databases is created");
-			} catch (SQLException e1) {
-				e.printStackTrace();
-			}
+	public static boolean createDatabases() {
+		logger.info("Starting database creation (prod and test) in MySQL.");
+		if (!areDatabasesCreated()) {
+			logger.error("The databases could not be created.");
+			return false;
+		} else {
+			logger.info("The databases are working.");
+			return true;
+		}
+	}
 
-			try (Connection con = DriverManager.getConnection(DBConstants.URLPROD, DBConstants.LOGIN,
-					DBConstants.PASSWORD)) {
-				logger.info("the database works");
-			} catch (SQLException e1) {
-				logger.error("the database is not working");
-				e1.printStackTrace();
-			}
+	private static boolean areDatabasesCreated() {
+		try (Connection connection = DriverManager.getConnection(DBConstants.URLMYSQL, DBConstants.LOGIN,
+				DBConstants.PASSWORD)) {
+			executeSqlFromFile(connection, "Data.sql");
+			logger.info("Databases created successfully.");
+			return true;
+		} catch (SQLException e) {
+			logger.error("Error: The databases could not be created: {}", e.getMessage());
+			return false;
 		}
 	}
 
@@ -54,7 +63,7 @@ public class DataBaseConfig {
 				BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
 
 			if (inputStream == null) {
-				logger.error("File not found: " + filePath);
+				logger.info("File not found: " + filePath);
 				return;
 			}
 
