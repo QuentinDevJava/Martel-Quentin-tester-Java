@@ -1,6 +1,7 @@
 package com.parkit.parkingsystem.config;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,12 +21,12 @@ public class DataBaseConfig {
 
 	public Connection getConnection() throws SQLException {
 		logger.info("Create DB connection");
-		return DriverManager.getConnection(DBConstants.URLPROD, DBConstants.LOGIN, DBConstants.PASSWORD);
+		return DriverManager.getConnection(DBConstants.URLPROD, DBConstants.LOGIN, DBConstants.getPassword());
 	}
 
 	public static boolean isConnected() {
 		try (Connection connection = DriverManager.getConnection(DBConstants.URLPROD, DBConstants.LOGIN,
-				DBConstants.PASSWORD)) {
+				DBConstants.getPassword())) {
 			logger.info("Connection to prod and test databases established successfully.");
 			return true;
 		} catch (SQLException e) {
@@ -47,7 +48,7 @@ public class DataBaseConfig {
 
 	private static boolean areDatabasesCreated() {
 		try (Connection connection = DriverManager.getConnection(DBConstants.URLMYSQL, DBConstants.LOGIN,
-				DBConstants.PASSWORD)) {
+				DBConstants.getPassword())) {
 			executeSqlFromFile(connection, "Data.sql");
 			logger.info("Databases created successfully.");
 			return true;
@@ -63,8 +64,7 @@ public class DataBaseConfig {
 				BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
 
 			if (inputStream == null) {
-				logger.info("File not found: " + filePath);
-				return;
+				throw new FileNotFoundException("File not found: " + filePath);
 			}
 
 			String strCurrentLine;

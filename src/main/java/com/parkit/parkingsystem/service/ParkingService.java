@@ -50,7 +50,6 @@ public class ParkingService {
 					String dateFormatted = formatOutput.format(inTime);
 					ticket.setOutTime(null);
 
-					// TODO utiliser Log4J
 					if (isRegularUser(vehicleRegNumber)) {
 						ticket.setDiscount(true);
 						System.out.println(

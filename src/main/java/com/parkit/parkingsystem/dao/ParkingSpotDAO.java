@@ -16,11 +16,19 @@ import com.parkit.parkingsystem.model.ParkingSpot;
 public class ParkingSpotDAO {
 	private static final Logger logger = LogManager.getLogger("ParkingSpotDAO");
 
-	public DataBaseConfig dataBaseConfig = new DataBaseConfig();
+	private DataBaseConfig dataBaseConfig = new DataBaseConfig();
+
+	public DataBaseConfig getDataBaseConfig() {
+		return dataBaseConfig;
+	}
+
+	public void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
+		this.dataBaseConfig = dataBaseConfig;
+	}
 
 	public int getNextAvailableSlot(ParkingType parkingType) {
 		int result = -1;
-		try (Connection con = dataBaseConfig.getConnection();
+		try (Connection con = getDataBaseConfig().getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.GET_NEXT_PARKING_SPOT)) {
 			ps.setString(1, parkingType.toString());
 			ResultSet rs = ps.executeQuery();
@@ -34,7 +42,7 @@ public class ParkingSpotDAO {
 	}
 
 	public boolean updateParking(ParkingSpot parkingSpot) {
-		try (Connection con = dataBaseConfig.getConnection();
+		try (Connection con = getDataBaseConfig().getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_PARKING_SPOT)) {
 			ps.setBoolean(1, parkingSpot.isAvailable());
 			ps.setInt(2, parkingSpot.getId());

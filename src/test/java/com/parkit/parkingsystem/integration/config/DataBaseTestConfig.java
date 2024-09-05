@@ -16,6 +16,6 @@ public class DataBaseTestConfig extends DataBaseConfig {
 
 	public Connection getConnection() throws SQLException {
 		logger.info("Create DB connection");
-		return DriverManager.getConnection(DBConstants.URLTEST, DBConstants.LOGIN, DBConstants.PASSWORD);
+		return DriverManager.getConnection(DBConstants.URLTEST, DBConstants.LOGIN, DBConstants.getPassword());
 	}
 }

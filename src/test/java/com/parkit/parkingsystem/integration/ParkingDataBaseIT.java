@@ -39,9 +39,9 @@ public class ParkingDataBaseIT {
 	@BeforeAll
 	public static void setUpParkingDataBaseIT() {
 		parkingSpotDAO = new ParkingSpotDAO();
-		parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
+		parkingSpotDAO.setDataBaseConfig(dataBaseTestConfig);
 		ticketDAO = new TicketDAO();
-		ticketDAO.dataBaseConfig = dataBaseTestConfig;
+		ticketDAO.setDataBaseConfig(dataBaseTestConfig);
 		dataBasePrepareService = new DataBasePrepareService();
 
 	}
@@ -58,7 +58,7 @@ public class ParkingDataBaseIT {
 
 	}
 
-	@DisplayName("Test l'entrée d'un veichule")
+	@DisplayName("Test l'entrée d'un véhicule")
 	@Test
 	public void testParkingACar() {
 		// GIVEN
@@ -78,7 +78,7 @@ public class ParkingDataBaseIT {
 				() -> Assertions.assertNotNull(testTicket, "Error Ticket table not update"));
 	}
 
-	@DisplayName("Test la sortie d'un veichule inferieur a 30 min")
+	@DisplayName("Test la sortie d'un véhicule inferieur a 30 min")
 	@Test
 	public void testParkingLotExit() {
 		// GIVEN
@@ -97,7 +97,7 @@ public class ParkingDataBaseIT {
 				() -> Assertions.assertNotNull((testTicket.getOutTime()), "Error ticket out time = null"));
 	}
 
-	@DisplayName("Test la sortie d'un veichule supperieur a 30 min")
+	@DisplayName("Test la sortie d'un véhicule supperieur a 30 min")
 	@Test
 	public void testParkingExit1h() {
 		// GIVEN
@@ -124,7 +124,7 @@ public class ParkingDataBaseIT {
 				() -> Assertions.assertNotNull((verifTicket.getOutTime()), "Error ticket out time = null"));
 	}
 
-	@DisplayName("Test l'entrée d'un veichiule dans le cas d’un utilisateur récurrent.")
+	@DisplayName("Test l'entrée d'un véhicule dans le cas d’un utilisateur récurrent.")
 	@Test
 	public void testParkingLotExitReccurringUser() {
 

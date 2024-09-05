@@ -19,10 +19,18 @@ public class TicketDAO {
 
 	private static final Logger logger = LogManager.getLogger(TicketDAO.class.getName());
 
-	public DataBaseConfig dataBaseConfig = new DataBaseConfig();
+	private DataBaseConfig dataBaseConfig = new DataBaseConfig();
+
+	public DataBaseConfig getDataBaseConfig() {
+		return dataBaseConfig;
+	}
+
+	public void setDataBaseConfig(DataBaseConfig dataBaseConfig) {
+		this.dataBaseConfig = dataBaseConfig;
+	}
 
 	public boolean saveTicket(Ticket ticket) {
-		try (Connection con = dataBaseConfig.getConnection();
+		try (Connection con = getDataBaseConfig().getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.SAVE_TICKET)) {
 
 			ps.setInt(1, ticket.getParkingSpot().getId());
@@ -41,7 +49,7 @@ public class TicketDAO {
 
 	public Ticket getTicket(String vehicleRegNumber) {
 		Ticket ticket = null;
-		try (Connection con = dataBaseConfig.getConnection();
+		try (Connection con = getDataBaseConfig().getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET)) {
 
 			ps.setString(1, vehicleRegNumber);
@@ -65,7 +73,7 @@ public class TicketDAO {
 	}
 
 	public boolean updateTicket(Ticket ticket) {
-		try (Connection con = dataBaseConfig.getConnection();
+		try (Connection con = getDataBaseConfig().getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET)) {
 
 			ps.setDouble(1, ticket.getPrice());
@@ -83,7 +91,7 @@ public class TicketDAO {
 
 	public int getNbTicket(String vehicleRegNumber) {
 		int nbTicket = 0;
-		try (Connection con = dataBaseConfig.getConnection();
+		try (Connection con = getDataBaseConfig().getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.NB_TICKET)) {
 
 			ps.setString(1, vehicleRegNumber);
@@ -101,7 +109,7 @@ public class TicketDAO {
 
 	public boolean ticketIsInDatabaseWithOutTimeNull(String vehicleRegNumber) {
 		int ticketRowExist = 0;
-		try (Connection con = dataBaseConfig.getConnection();
+		try (Connection con = getDataBaseConfig().getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.TICKET_AWAITS_RELEASE)) {
 
 			ps.setString(1, vehicleRegNumber);
