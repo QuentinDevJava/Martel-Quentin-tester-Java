@@ -99,7 +99,7 @@ public class ParkingDataBaseIT {
 
 	@DisplayName("Test la sortie d'un véhicule supperieur a 30 min")
 	@Test
-	public void testParkingExit1h() {
+	public void testParkingExit1H() {
 		// GIVEN
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 

@@ -100,11 +100,11 @@ public class FareCalculatorServiceTest {
 
 	@Nested
 	@DisplayName("Test le calcul du prix pour une durée de 1h")
-	class calculateFareFor1h {
+	class calculateFareFor1H {
 
 		@ParameterizedTest
 		@MethodSource("provideParkingAndFareParameters")
-		public void calculateFareVehicleFor1h(ParkingType parkingType, double expectedFare) {
+		public void calculateFareVehicleFor1H(ParkingType parkingType, double expectedFare) {
 			// GIVEN
 			Date inTime = new Date();
 			inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));// Time 1h
@@ -190,11 +190,11 @@ public class FareCalculatorServiceTest {
 
 	@Nested
 	@DisplayName("Test le calcul du prix pour moins de 30 minutes")
-	class calculateFareWithLessThan30minutesParkingTime {
+	class calculateFareWithLessThan30MinutesParkingTime {
 
 		@ParameterizedTest
 		@MethodSource("provideParkingAndFareParameters")
-		public void calculateFareVehicleWithLessThan30minutesParkingTime(ParkingType parkingType, double expectedFare) {
+		public void calculateFareVehicleWithLessThan30MinutesParkingTime(ParkingType parkingType, double expectedFare) {
 			// GIVEN
 			Date inTime = new Date();
 			inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000) / 2);
@@ -203,10 +203,10 @@ public class FareCalculatorServiceTest {
 			ticket.setInTime(inTime);
 			ticket.setOutTime(outTime);
 			ticket.setParkingSpot(parkingSpot);
-			
+
 			// WHEN
 			fareCalculatorService.calculateFare(ticket);
-			
+
 			// THEN
 			assertEquals(expectedFare, ticket.getPrice());
 		}
@@ -231,10 +231,10 @@ public class FareCalculatorServiceTest {
 			ticket.setOutTime(outTime);
 			ticket.setParkingSpot(parkingSpot);
 			ticket.setDiscount(true);
-			
+
 			// WHEN
 			fareCalculatorService.calculateFare(ticket);
-			
+
 			// THEN
 			DecimalFormat df = new DecimalFormat("#.##");
 			assertEquals(Double.parseDouble(df.format(expectedFare).replace(',', '.')), ticket.getPrice());
