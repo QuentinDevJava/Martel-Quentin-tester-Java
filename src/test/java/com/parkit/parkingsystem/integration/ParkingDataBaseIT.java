@@ -1,10 +1,8 @@
 package com.parkit.parkingsystem.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-
-import java.util.Date;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -68,17 +66,18 @@ public class ParkingDataBaseIT {
 		parkingService.processIncomingVehicle();
 
 		// THEN
-		Ticket testTicket = ticketDAO.getTicket("ABCDEF");
-		boolean parkingisavailability = testTicket.getParkingSpot().isAvailable();
+		Ticket ticket = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
+		boolean parkingIsAvailability = ticket.getParkingSpot().isAvailable();
 		int spotNumber = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
+
 		assertAll("Error Test Parking A Car",
 				() -> Assertions.assertEquals(2, spotNumber, "Error Parking table not update"),
-				() -> Assertions.assertEquals(false, parkingisavailability, "Error Spot availability true"),
-				() -> Assertions.assertNull((testTicket.getOutTime()), "Error ticket time out not null"),
-				() -> Assertions.assertNotNull(testTicket, "Error Ticket table not update"));
+				() -> Assertions.assertEquals(false, parkingIsAvailability, "Error Spot availability true"),
+				() -> Assertions.assertNull((ticket.getOutTime()), "Error ticket time out not null"),
+				() -> Assertions.assertNotNull(ticket, "Error Ticket table not update"));
 	}
 
-	@DisplayName("Test la sortie d'un véhicule inferieur a 30 min")
+	@DisplayName("Test la sortie d'un véhicule")
 	@Test
 	public void testParkingLotExit() {
 		// GIVEN
@@ -88,7 +87,7 @@ public class ParkingDataBaseIT {
 		parkingService.processIncomingVehicle();
 		parkingService.processExitingVehicle();
 
-		Ticket testTicket = ticketDAO.getTicket("ABCDEF");
+		Ticket testTicket = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
 		int parkingSpotTest = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
 
 		// THEN
@@ -97,58 +96,29 @@ public class ParkingDataBaseIT {
 				() -> Assertions.assertNotNull((testTicket.getOutTime()), "Error ticket out time = null"));
 	}
 
-	@DisplayName("Test la sortie d'un véhicule supperieur a 30 min")
-	@Test
-	public void testParkingExit1H() {
-		// GIVEN
-		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-
-		// WHEN
-		parkingService.processIncomingVehicle();
-
-		Ticket testTicket = ticketDAO.getTicket("ABCDEF"); // loads data from the exit ticket
-		Date inTime = new Date();
-		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-		testTicket.setOutTime(null); // update out time
-		testTicket.setInTime(inTime); // update in time
-		ticketDAO.saveTicket(testTicket);
-
-		parkingService.processExitingVehicle();
-
-		Ticket verifTicket = ticketDAO.getTicket("ABCDEF");
-		int parkingSpotTest = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
-
-		// THEN
-		assertAll("Error Test Parking Exit",
-				() -> Assertions.assertEquals(1, parkingSpotTest, "Error parking Parking table not update"),
-				() -> Assertions.assertNotNull((verifTicket.getOutTime()), "Error ticket out time = null"));
-	}
-
-	@DisplayName("Test l'entrée d'un véhicule dans le cas d’un utilisateur récurrent.")
+	@DisplayName("Test l'entrée d'un véhicule avec un utilisateur récurrent.")
 	@Test
 	public void testParkingLotExitReccurringUser() {
-
-		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		// GIVEN
+		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
 		parkingService.processIncomingVehicle();
 		parkingService.processExitingVehicle();
 
-//TODO verification de la methode a faire voir si possible de modifier l'heure d'entree lors de parkingService.processIncomingVehicle()
+		Ticket firstTicket = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
 
-		Ticket testTicket = ticketDAO.getTicket("ABCDEF"); // loads data from the exit ticket
-		Date inTime = new Date();
-		inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-		testTicket.setOutTime(null); // update out time
-		testTicket.setInTime(inTime); // update in time
-		ticketDAO.saveTicket(testTicket);
-		// To simulate entry, I add a fake ticket to the database that would have
-		// entered the parking lot an hour ago to test the price.
+		assertThat(firstTicket.hasDiscount()).isFalse();
+		assertThat(firstTicket.getOutTime()).isNotNull();
+
+		parkingService.processIncomingVehicle();
 
 		// WHEN
 		parkingService.processExitingVehicle();
-		testTicket = ticketDAO.getTicket("ABCDEF"); // loads data from the exit ticket with discount
 
 		// THEN
-		assertTrue(testTicket.getPrice() >= 0);
+		Ticket currentTicket = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
+
+		assertThat(currentTicket.hasDiscount()).isTrue();
 	}
+
 }

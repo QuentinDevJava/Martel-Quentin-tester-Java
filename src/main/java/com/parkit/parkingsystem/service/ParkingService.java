@@ -90,10 +90,6 @@ public class ParkingService {
 			SimpleDateFormat formatOutput = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			String dateFormatted = formatOutput.format(outTime);
 
-			if (isRegularUser(vehicleRegNumber)) {
-				ticket.setDiscount(true);
-			}
-
 			fareCalculatorService.calculateFare(ticket);
 
 			if (ticketDAO.updateTicket(ticket)) {

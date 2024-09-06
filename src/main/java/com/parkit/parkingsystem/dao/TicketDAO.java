@@ -38,7 +38,7 @@ public class TicketDAO {
 			ps.setDouble(3, ticket.getPrice());
 			ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
 			ps.setTimestamp(5, (ticket.getOutTime() == null) ? null : (new Timestamp(ticket.getOutTime().getTime())));
-
+			ps.setBoolean(6, ticket.hasDiscount());
 			return ps.execute();
 
 		} catch (SQLException ex) {
@@ -57,13 +57,14 @@ public class TicketDAO {
 
 			if (rs.next()) {
 				ticket = new Ticket();
-				ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(6)), false);
+				ParkingSpot parkingSpot = new ParkingSpot(rs.getInt(1), ParkingType.valueOf(rs.getString(7)), false);
 				ticket.setParkingSpot(parkingSpot);
 				ticket.setId(rs.getInt(2));
 				ticket.setVehicleRegNumber(vehicleRegNumber);
 				ticket.setPrice(rs.getDouble(3));
 				ticket.setInTime(rs.getTimestamp(4));
 				ticket.setOutTime(rs.getTimestamp(5));
+				ticket.setDiscount(rs.getBoolean(6));
 			}
 
 		} catch (SQLException ex) {
@@ -78,7 +79,8 @@ public class TicketDAO {
 
 			ps.setDouble(1, ticket.getPrice());
 			ps.setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));
-			ps.setInt(3, ticket.getId());
+			ps.setBoolean(3, ticket.hasDiscount());
+			ps.setInt(4, ticket.getId());
 			ps.execute();
 
 			return true;

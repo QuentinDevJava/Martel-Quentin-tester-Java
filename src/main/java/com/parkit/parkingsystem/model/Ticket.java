@@ -70,6 +70,10 @@ public class Ticket {
 		this.discount = discount;
 	}
 
+	public boolean hasDiscount() {
+		return discount;
+	}
+
 	public boolean isInvalidTime() {
 		return this.outTime == null || this.outTime.before(this.inTime);
 	}

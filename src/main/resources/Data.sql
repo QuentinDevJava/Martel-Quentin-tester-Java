@@ -1,7 +1,7 @@
 create database if not exists prod; 
 use prod;
 create table if not exists parking(PARKING_NUMBER int PRIMARY KEY,AVAILABLE bool NOT NULL,TYPE varchar(10) NOT NULL);
-create table if not exists ticket( ID int PRIMARY KEY AUTO_INCREMENT, PARKING_NUMBER int NOT NULL, VEHICLE_REG_NUMBER varchar(10) NOT NULL, PRICE double, IN_TIME DATETIME NOT NULL, OUT_TIME DATETIME, FOREIGN KEY (PARKING_NUMBER) REFERENCES parking(PARKING_NUMBER));
+create table if not exists ticket( ID int PRIMARY KEY AUTO_INCREMENT, PARKING_NUMBER int NOT NULL, VEHICLE_REG_NUMBER varchar(10) NOT NULL, PRICE double, IN_TIME DATETIME NOT NULL, OUT_TIME DATETIME, DISCOUNT bool NOT NULL, FOREIGN KEY (PARKING_NUMBER) REFERENCES parking(PARKING_NUMBER));
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(1,true,'CAR');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(2,true,'CAR');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(3,true,'CAR');
@@ -10,7 +10,7 @@ insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(5,true,'BIKE');
 create database if not exists test;
 use test;
 create table if not exists parking(PARKING_NUMBER int PRIMARY KEY,AVAILABLE bool NOT NULL,TYPE varchar(10) NOT NULL);
-create table if not exists ticket( ID int PRIMARY KEY AUTO_INCREMENT, PARKING_NUMBER int NOT NULL, VEHICLE_REG_NUMBER varchar(10) NOT NULL, PRICE double, IN_TIME DATETIME NOT NULL, OUT_TIME DATETIME, FOREIGN KEY (PARKING_NUMBER) REFERENCES parking(PARKING_NUMBER));
+create table if not exists ticket( ID int PRIMARY KEY AUTO_INCREMENT, PARKING_NUMBER int NOT NULL, VEHICLE_REG_NUMBER varchar(10) NOT NULL, PRICE double, IN_TIME DATETIME NOT NULL, OUT_TIME DATETIME, DISCOUNT bool NOT NULL , FOREIGN KEY (PARKING_NUMBER) REFERENCES parking(PARKING_NUMBER));
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(1,true,'CAR');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(2,true,'CAR');
 insert into parking(PARKING_NUMBER,AVAILABLE,TYPE) values(3,true,'CAR');

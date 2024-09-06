@@ -87,6 +87,7 @@ public class ParkingServiceTest {
 		public void processExitingVehicleBikeTest() throws Exception {
 			// GIVEN
 			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");// Vehicle Registration
+
 			Ticket ticket = createTicket(1, ParkingType.BIKE, false,
 					(new Date(System.currentTimeMillis() - (60 * 60 * 1000))), null);
 
@@ -134,6 +135,7 @@ public class ParkingServiceTest {
 		public void processExitingVehicleBikeWithRegularUserTest() throws Exception {
 			// GIVEN
 			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");// Vehicle Registration
+
 			Ticket ticket = createTicket(1, ParkingType.BIKE, false,
 					(new Date(System.currentTimeMillis() - (60 * 60 * 1000))), null);
 
