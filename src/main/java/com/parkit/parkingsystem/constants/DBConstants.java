@@ -27,8 +27,3 @@ public class DBConstants {
 	public static final String TICKET_AWAITS_RELEASE = "select count(VEHICLE_REG_NUMBER) FROM ticket t where t.VEHICLE_REG_NUMBER=? and t.OUT_TIME is null";
 
 }
-// private static final String URLMYSQL = "jdbc:mysql://localhost:3307/mysql";
-// private static final String URLTEST = "jdbc:mysql://localhost:3306/test";
-// private static final String URLPROD = "jdbc:mysql://localhost:3307/prod";
-// private static final String LOGIN = "root";
-// private static final String PASSWORD = "root";

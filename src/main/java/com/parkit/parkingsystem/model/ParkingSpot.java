@@ -43,4 +43,9 @@ public class ParkingSpot {
 	public int hashCode() {
 		return number;
 	}
+
+	public boolean isInitialized() {
+		return this.getId() > 0;
+	}
+
 }

@@ -33,9 +33,9 @@ public class ParkingService {
 	public void processIncomingVehicle() {
 		try {
 			ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
-			if (parkingSpot != null && parkingSpot.getId() > 0) {
+			if (parkingSpot != null && parkingSpot.isInitialized()) {
 				String vehicleRegNumber = getVehicleRegNumber();
-				if (!ticketDAO.ticketIsInDatabaseWithOutTimeNull(vehicleRegNumber)) {// The ticket not exists
+				if (!ticketDAO.isTicketAwaitingRelease(vehicleRegNumber)) {
 					// allocated parking spot
 					parkingSpot.setAvailable(false);
 					parkingSpotDAO.updateParking(parkingSpot);
@@ -69,7 +69,6 @@ public class ParkingService {
 					throw new IllegalArgumentException(
 							"Error registering your ticket in the database. Your registration number is already in the database");
 				}
-
 			}
 		} catch (Exception e) {
 			logger.error("Unable to process incoming vehicle", e);

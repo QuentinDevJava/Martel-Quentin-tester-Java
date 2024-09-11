@@ -233,7 +233,7 @@ public class ParkingServiceTest {
 			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 			when(inputReaderUtil.readSelection()).thenReturn(1);// Car
 
-			when(ticketDAO.ticketIsInDatabaseWithOutTimeNull(anyString())).thenReturn(true);
+			when(ticketDAO.isTicketAwaitingRelease(anyString())).thenReturn(true);
 			when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
 
 			// WHEN

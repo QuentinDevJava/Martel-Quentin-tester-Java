@@ -109,7 +109,7 @@ public class TicketDAO {
 		return nbTicket;
 	}
 
-	public boolean ticketIsInDatabaseWithOutTimeNull(String vehicleRegNumber) {
+	public boolean isTicketAwaitingRelease(String vehicleRegNumber) {
 		int ticketRowExist = 0;
 		try (Connection con = getDataBaseConfig().getConnection();
 				PreparedStatement ps = con.prepareStatement(DBConstants.TICKET_AWAITS_RELEASE)) {
