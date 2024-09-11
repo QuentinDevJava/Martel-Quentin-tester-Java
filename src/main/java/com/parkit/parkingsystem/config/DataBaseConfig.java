@@ -75,7 +75,7 @@ public class DataBaseConfig {
 			stmt.executeBatch();
 
 		} catch (IOException | SQLException e) {
-			e.printStackTrace();
+			logger.error("Error: execute Sql From File {}", e.getMessage());
 		}
 	}
 }
